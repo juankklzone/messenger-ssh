@@ -28,5 +28,5 @@ func main() {
 
 	http.Handle("/bot", fbot.Handler(bot))
 
-	http.ListenAndServe(":4567", nil)
+	http.ListenAndServe(":8000", nil)
 }
