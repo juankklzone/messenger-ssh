@@ -31,9 +31,9 @@ func publicKeyFile(file string) ssh.AuthMethod {
 
 	key, err := ssh.ParsePrivateKey(buffer)
 	if err != nil {
-		fmt.Println(err)
-		return nil
+		panic(err)
 	}
+	//fmt.Println(key.PublicKey().Type())
 	return ssh.PublicKeys(key)
 }
 
@@ -57,28 +57,27 @@ func main() {
 	pipe, err := session.StdinPipe()
 	defer pipe.Close()
 	tee := io.TeeReader(os.Stdin, pipe)
-	go func(r io.Reader) {
+	//Pipe entre Stdin local y Stdin de la sesión ssh
+	leerDatos := func(r io.Reader) {
 		b, err := ioutil.ReadAll(r)
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		fmt.Printf("%s", b)
-	}(tee)
+	}
+	go leerDatos(tee)
 	checkErr(err)
 
-	err = session.Start("/bin/bash")
-	fmt.Println("esperando datos...")
-	session.Wait()
-
-	/*modes := ssh.TerminalModes{
+	modes := ssh.TerminalModes{
 		ssh.ECHO:          0,     // disable echoing
 		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
 		ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
-	}*/
-	/*err = session.RequestPty("xterm", 120, 60, modes)
-	checkErr(err)*/
-	/*data, err := session.Output("uname -a")
+	}
+	err = session.RequestPty("xterm", 120, 180, modes)
 	checkErr(err)
-	fmt.Printf("%q\n", data)*/
+	if err := session.Shell(); err != nil {
+		panic(err)
+	}
+	err = session.Wait()
+	fmt.Println("finalizando sesión con error ", err)
 }
