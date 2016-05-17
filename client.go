@@ -19,15 +19,30 @@ func checkErr(err error) {
 
 var (
 	user = flag.String("user", os.Getenv("SSH_CLIENT"), "usuario ssh -> $SSH_CLIENT")
-	pass = flag.String("pass", os.Getenv("SSH_PASS"), "pass ssh -> $SSH_PASS")
+	ruta = flag.String("archivo", os.Getenv("SSH_PUBLIC_KEY"), "archivo con llave pública $SSH_PUBLIC_KEY")
+	//pass = flag.String("pass", os.Getenv("SSH_PASS"), "pass ssh -> $SSH_PASS")
 )
+
+func publicKeyFile(file string) ssh.AuthMethod {
+	buffer, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil
+	}
+
+	key, err := ssh.ParsePrivateKey(buffer)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return ssh.PublicKeys(key)
+}
 
 func main() {
 	flag.Parse()
 	config := &ssh.ClientConfig{
 		User: *user,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(*pass),
+			publicKeyFile(*ruta),
 		},
 	}
 	conn, err := ssh.Dial("tcp", "localhost:22", config)
@@ -52,7 +67,7 @@ func main() {
 	}(tee)
 	checkErr(err)
 
-	err = session.Start("/bin/zsh")
+	err = session.Start("/bin/bash")
 	fmt.Println("esperando datos...")
 	session.Wait()
 
