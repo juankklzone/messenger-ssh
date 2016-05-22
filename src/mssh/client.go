@@ -40,7 +40,9 @@ func startSession(m Messaging) (err error) {
 			auth,
 		},
 	}
-	u.conn, err = ssh.Dial("tcp", ip+":22", config)
+	url := ip + ":22"
+	fmt.Println(url)
+	u.conn, err = ssh.Dial("tcp", url, config)
 	if err != nil {
 		return
 	}
