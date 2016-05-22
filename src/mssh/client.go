@@ -101,14 +101,10 @@ func startSession(m Messaging) (err error) {
 
 func publicKeyFile(file string) ssh.AuthMethod {
 	buffer, err := ioutil.ReadFile(file)
-	if err != nil {
-		return nil
-	}
+	checkErr(err)
 
 	key, err := ssh.ParsePrivateKey(buffer)
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 	//fmt.Println(key.PublicKey().Type())
 	return ssh.PublicKeys(key)
 }
