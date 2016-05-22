@@ -1,7 +1,6 @@
 package mssh
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -35,9 +34,7 @@ func startSession(m Messaging) (err error) {
 	var user, ip, port string
 	fmt.Sscanf(m.Message.Text, "start ssh %s %s %s", &user, &ip, &port)
 	u := User{
-		id:       m.Sender.Id,
-		writeBuf: new(bytes.Buffer),
-		readBuf:  new(bytes.Buffer),
+		id: m.Sender.Id,
 	}
 	config := &ssh.ClientConfig{
 		User: user,
