@@ -87,6 +87,7 @@ func sendMessage(id string, text string) {
 
 //HanddleMessage se encaarga de hacer la función dependiendo el mensaje recibido
 func HanddleMessage(m Messaging) {
+	fmt.Println(m.Message.Text)
 	if strings.HasPrefix(m.Message.Text, "start") {
 		sendMessage(m.Sender.Id, "Conectando...")
 		err := startSession(m)
