@@ -73,15 +73,15 @@ func sendMessage(id string, text string) {
 	url := fmt.Sprintf(deliverURL, PageAuth.PageToken)
 	message, err := json.Marshal(&dm)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("error al codificar mensaje de envio", err)
 		return
 	}
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(message))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("error al enviar respesta", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println(resp.Status)
+		fmt.Println("status equivocado de respuesta", resp.Status)
 	}
 }
 
@@ -109,6 +109,7 @@ func HanddleMessage(m Messaging) {
 			sendMessage(m.Sender.Id, " no se pudo ejecutar comando")
 			fmt.Println("error al enviar comando", err)
 		} else {
+			fmt.Println("resultado a enviar", result)
 			sendMessage(m.Sender.Id, result)
 		}
 	}
