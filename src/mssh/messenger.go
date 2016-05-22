@@ -1,4 +1,4 @@
-package main
+package mssh
 
 import (
 	"bytes"
@@ -7,6 +7,13 @@ import (
 	"net/http"
 	"strings"
 )
+
+const deliverURL = "https://graph.facebook.com/v2.6/me/messages?access_token=%s"
+
+var PageAuth = Auth{
+	VerifyToken: "verify_Alepht",
+	PageToken:   "EAALVTDYz2rcBAD2NvvkJMo9d987bVfbMaXIC35d2DHtfnwLAFkQbtBfSacLBA5ch94prbcL9ZAXsDe72UAiXMUaahOyZB39dXgYdE8eDNt0gXlK6Ag3YbJInHCUKM78THlVh0k8F2wU5PAwWyEGzSZCq4MkLGq09OWY2bgjwAZDZD",
+}
 
 //Auth contiene los Tokens del API de Messenger
 type Auth struct {
@@ -63,7 +70,7 @@ func sendMessage(id string, text string) {
 		Message:   Message{Text: text},
 		Recipient: Recipient{Id: id},
 	}
-	url := fmt.Sprintf(deliverURL, a.PageToken)
+	url := fmt.Sprintf(deliverURL, PageAuth.PageToken)
 	message, err := json.Marshal(&dm)
 	if err != nil {
 		fmt.Println(err)
@@ -78,13 +85,14 @@ func sendMessage(id string, text string) {
 	}
 }
 
-func handdleMessage(m Messaging) {
+//HanddleMessage se encaarga de hacer la función dependiendo el mensaje recibido
+func HanddleMessage(m Messaging) {
 	if strings.HasPrefix(m.Message.Text, "start") {
 		err := startSession(m)
 		if err != nil {
-			sendMessage(m.Sender, "No se pudo conectar\nHola")
+			sendMessage(m.Sender.Id, "No se pudo conectar\nHola")
 			return
 		}
-		sendMessage(m.Sender, "Conexión realizada\nHola")
+		sendMessage(m.Sender.Id, "Conexión realizada\nHola")
 	}
 }

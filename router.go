@@ -4,15 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"mssh"
 	"net/http"
 )
-
-const deliverURL = "https://graph.facebook.com/v2.6/me/messages?access_token=%s"
-
-var a = Auth{
-	VerifyToken: "verify_Alepht",
-	PageToken:   "EAALVTDYz2rcBAD2NvvkJMo9d987bVfbMaXIC35d2DHtfnwLAFkQbtBfSacLBA5ch94prbcL9ZAXsDe72UAiXMUaahOyZB39dXgYdE8eDNt0gXlK6Ag3YbJInHCUKM78THlVh0k8F2wU5PAwWyEGzSZCq4MkLGq09OWY2bgjwAZDZD",
-}
 
 func main() {
 	http.HandleFunc("/", handdler)
@@ -29,7 +23,7 @@ func handdler(res http.ResponseWriter, req *http.Request) {
 }
 
 func verify(res http.ResponseWriter, req *http.Request) {
-	if a.VerifyToken == req.FormValue("hub.verify_token") {
+	if mssh.PageAuth.VerifyToken == req.FormValue("hub.verify_token") {
 		res.Write([]byte(req.FormValue("hub.challenge")))
 		return
 	}
@@ -38,7 +32,7 @@ func verify(res http.ResponseWriter, req *http.Request) {
 
 func recieve(res http.ResponseWriter, req *http.Request) {
 	body, _ := ioutil.ReadAll(req.Body)
-	var d Data
+	var d mssh.Data
 	err := json.Unmarshal(body, &d)
 	if err != nil {
 		fmt.Println(err)
@@ -46,7 +40,7 @@ func recieve(res http.ResponseWriter, req *http.Request) {
 	}
 	for _, m := range d.Entries[0].Messagings {
 		if m.Message.Text != "" {
-			handdleMessage(m)
+			mssh.HanddleMessage(m)
 		}
 	}
 }
