@@ -55,6 +55,7 @@ func startSession(m Messaging) (err error) {
 	if err != nil {
 		return
 	}
+	mapaUsuarios[u.id] = u
 	/*modes := ssh.TerminalModes{
 		ssh.ECHO:          0,     // disable echoing
 		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
@@ -67,7 +68,7 @@ func startSession(m Messaging) (err error) {
 	if err = u.session.Shell(); err != nil {
 		return
 	}
-	mapaUsuarios[u.id] = u
+
 	go func() { u.session.Wait() }()*/
 	return
 }
