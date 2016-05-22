@@ -11,9 +11,8 @@ import (
 
 //User contiene la configuración para la conexión SSH y el id que lo representa en Messenger
 type User struct {
-	id      string
-	conn    *ssh.Client
-	session *ssh.Session
+	id   string
+	conn *ssh.Client
 }
 
 var (
@@ -51,43 +50,28 @@ func startSession(m Messaging) (err error) {
 	if err != nil {
 		return
 	}
-	u.session, err = u.conn.NewSession()
-	if err != nil {
-		return
-	}
 	mapaUsuarios[u.id] = u
-	/*modes := ssh.TerminalModes{
-		ssh.ECHO:          0,     // disable echoing
-		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
-		ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
-	}
-	err = u.session.RequestPty("xterm", 120, 180, modes)
-	if err != nil {
-		return
-	}
-	if err = u.session.Shell(); err != nil {
-		return
-	}
-
-	go func() { u.session.Wait() }()*/
 	return
 }
 
 func closeSession(m Messaging) (err error) {
-	err = mapaUsuarios[m.Sender.Id].session.Close()
+	err = mapaUsuarios[m.Sender.Id].conn.Close()
 	delete(mapaUsuarios, m.Sender.Id)
 	return
 }
 
 func sendCommand(m Messaging) (result string, err error) {
 	usr := mapaUsuarios[m.Sender.Id]
-	if usr.session == nil {
+	if usr.conn == nil {
 		err = errors.New("no hay una sesión iniciada")
 		return
 	}
+
 	fmt.Println("comando a enviar: ", m.Message.Text)
-	data, err := usr.session.CombinedOutput(m.Message.Text)
+	session, _ := usr.conn.NewSession()
+	data, err := session.CombinedOutput(m.Message.Text)
 	result = string(data)
+	session.Close()
 	return
 }
 
