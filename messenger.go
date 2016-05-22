@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 //Auth contiene los Tokens del API de Messenger
@@ -57,10 +58,10 @@ type DeliverMessage struct {
 	Message   Message   `json:"message"`
 }
 
-func sendMessage(s Sender, text string) {
+func sendMessage(id string, text string) {
 	dm := DeliverMessage{
 		Message:   Message{Text: text},
-		Recipient: Recipient{Id: s.Id},
+		Recipient: Recipient{Id: id},
 	}
 	url := fmt.Sprintf(deliverURL, a.PageToken)
 	message, err := json.Marshal(&dm)
@@ -74,5 +75,16 @@ func sendMessage(s Sender, text string) {
 	}
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println(resp.Status)
+	}
+}
+
+func handdleMessage(m Messaging) {
+	if strings.HasPrefix(m.Message.Text, "start") {
+		err := startSession(m)
+		if err != nil {
+			sendMessage(m.Sender, "No se pudo conectar\nHola")
+			return
+		}
+		sendMessage(m.Sender, "Conexión realizada\nHola")
 	}
 }

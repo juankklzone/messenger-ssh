@@ -45,10 +45,8 @@ func recieve(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	for _, m := range d.Entries[0].Messagings {
-		message := m.Message.Text
-		if message != "" {
-			s := m.Sender
-			sendMessage(s, message)
+		if m.Message.Text != "" {
+			handdleMessage(m)
 		}
 	}
 }
