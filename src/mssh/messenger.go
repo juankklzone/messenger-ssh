@@ -96,7 +96,20 @@ func HanddleMessage(m Messaging) {
 			return
 		}
 		sendMessage(m.Sender.Id, "Conexión realizada")
+	} else if m.Message.Text == "close" {
+		sendMessage(m.Sender.Id, "Cerrando sesión....")
+		err := closeSession(m)
+		if err != nil {
+			fmt.Println("error al cerrar sesión", err)
+		}
+		sendMessage(m.Sender.Id, "sesión finalizada")
 	} else {
-		sendMessage(m.Sender.Id, "Comando desconocido\nLos comandos son:\nstart ssh usuario dominio puerto\nstop ssh")
+		result, err := sendCommand(m)
+		if err != nil {
+			sendMessage(m.Sender.Id, " no se pudo ejecutar comando")
+			fmt.Println(err)
+		} else {
+			sendMessage(m.Sender.Id, result)
+		}
 	}
 }

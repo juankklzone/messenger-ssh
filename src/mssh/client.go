@@ -1,6 +1,8 @@
 package mssh
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -10,9 +12,11 @@ import (
 
 //User contiene la configuración para la conexión SSH y el id que lo representa en Messenger
 type User struct {
-	id      string
-	conn    *ssh.Client
-	session *ssh.Session
+	id       string
+	conn     *ssh.Client
+	session  *ssh.Session
+	writeBuf *bytes.Buffer
+	readBuf  *bytes.Buffer
 }
 
 var (
@@ -33,7 +37,9 @@ func startSession(m Messaging) (err error) {
 	var user, ip, port string
 	fmt.Sscanf(m.Message.Text, "start ssh %s %s %s", &user, &ip, &port)
 	u := User{
-		id: m.Sender.Id,
+		id:       m.Sender.Id,
+		writeBuf: new(bytes.Buffer),
+		readBuf:  new(bytes.Buffer),
 	}
 	config := &ssh.ClientConfig{
 		User: user,
@@ -54,7 +60,29 @@ func startSession(m Messaging) (err error) {
 	if err != nil {
 		return
 	}
+	u.session.Stdout = u.readBuf
+	u.session.Stdin = u.writeBuf
 	mapaUsuarios[u.id] = u
+	go func() { u.session.Wait() }()
+	return
+}
+
+func closeSession(m Messaging) (err error) {
+	err = mapaUsuarios[m.Sender.Id].session.Close()
+	delete(mapaUsuarios, m.Sender.Id)
+	return
+}
+
+func sendCommand(m Messaging) (result string, err error) {
+	usr := mapaUsuarios[m.Sender.Id]
+	if usr.session == nil {
+		err = errors.New("no hay una sesión iniciada")
+		return
+	}
+	_, err = usr.writeBuf.Write([]byte(m.Message.Text))
+	usr.writeBuf.Reset()
+	result = usr.readBuf.String()
+	usr.readBuf.Reset()
 	return
 }
 
