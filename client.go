@@ -45,7 +45,7 @@ func main() {
 			publicKeyFile(*ruta),
 		},
 	}
-	conn, err := ssh.Dial("tcp", "localhost:22", config)
+	conn, err := ssh.Dial("tcp", "alepht.com:22", config)
 	checkErr(err)
 	defer conn.Close()
 	session, err := conn.NewSession()
