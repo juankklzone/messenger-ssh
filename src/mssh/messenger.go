@@ -66,6 +66,9 @@ type DeliverMessage struct {
 }
 
 func sendMessage(id string, text string) {
+	if len(text) > 320 {
+		text = text[:310]
+	}
 	dm := DeliverMessage{
 		Message:   Message{Text: text},
 		Recipient: Recipient{Id: id},

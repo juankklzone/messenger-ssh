@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -96,14 +97,14 @@ func closeSession(m Messaging) (err error) {
 }
 
 func sendCommand(m Messaging) (result string, err error) {
-	err = errors.New("testing err")
-	return
 	usr := mapaUsuarios[m.Sender.Id]
 	if usr.session == nil {
 		err = errors.New("no hay una sesión iniciada")
 		return
 	}
-	_, err = usr.writeBuf.Write([]byte(m.Message.Text))
+	reader := strings.NewReader(m.Message.Text)
+	fmt.Println("comando a enviar: ", m.Message.Text)
+	reader.WriteTo(usr.writeBuf)
 	usr.writeBuf.Reset()
 	result = usr.readBuf.String()
 	usr.readBuf.Reset()
