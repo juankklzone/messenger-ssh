@@ -66,8 +66,15 @@ type DeliverMessage struct {
 }
 
 func sendMessage(id string, text string) {
-	if len(text) > 320 {
-		text = text[:310]
+	lt := len(text)
+	if lt > 320 {
+		segments, rem := lt/320, lt%320
+		for i := 0; i < segments; i++ {
+			sendMessage(id, text[i*320:i*320+320])
+		}
+		if rem != 0 {
+			sendMessage(id, text[segments*320:])
+		}
 	}
 	dm := DeliverMessage{
 		Message:   Message{Text: text},
