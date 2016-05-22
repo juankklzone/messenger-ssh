@@ -4,21 +4,17 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
 
 //User contiene la configuración para la conexión SSH y el id que lo representa en Messenger
 type User struct {
-	id       string
-	conn     *ssh.Client
-	session  *ssh.Session
-	writeBuf *bytes.Buffer
-	readBuf  *bytes.Buffer
+	id      string
+	conn    *ssh.Client
+	session *ssh.Session
 }
 
 var (
@@ -62,13 +58,7 @@ func startSession(m Messaging) (err error) {
 	if err != nil {
 		return
 	}
-	u.session.Stdout = u.readBuf
-	wpipe, err := u.session.StdinPipe()
-	if err != nil {
-		return
-	}
-	go io.Copy(wpipe, u.writeBuf)
-	modes := ssh.TerminalModes{
+	/*modes := ssh.TerminalModes{
 		ssh.ECHO:          0,     // disable echoing
 		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
 		ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
@@ -81,7 +71,7 @@ func startSession(m Messaging) (err error) {
 		return
 	}
 	mapaUsuarios[u.id] = u
-	go func() { u.session.Wait() }()
+	go func() { u.session.Wait() }()*/
 	return
 }
 
@@ -97,13 +87,9 @@ func sendCommand(m Messaging) (result string, err error) {
 		err = errors.New("no hay una sesión iniciada")
 		return
 	}
-	reader := strings.NewReader(m.Message.Text)
 	fmt.Println("comando a enviar: ", m.Message.Text)
-	reader.WriteTo(usr.writeBuf)
-	usr.writeBuf.Reset()
-	result = usr.readBuf.String()
-	usr.readBuf.Reset()
-
+	data, err := usr.session.CombinedOutput(m.Message.Text)
+	result = string(data)
 	return
 }
 
