@@ -30,8 +30,8 @@ func init() {
 }
 
 func startSession(m Messaging) (err error) {
-	var user, ip string
-	fmt.Sscanf(m.Message.Text, "start ssh %s %s", &user, &ip)
+	var user, ip, port string
+	fmt.Sscanf(m.Message.Text, "start ssh %s %s %s", &user, &ip, &port)
 	u := User{
 		id: m.Sender.Id,
 	}
@@ -41,7 +41,10 @@ func startSession(m Messaging) (err error) {
 			auth,
 		},
 	}
-	url := ip + ":22"
+	if port == "" {
+		port = "22"
+	}
+	url := ip + ":" + port
 	fmt.Println(url)
 	u.conn, err = ssh.Dial("tcp", url, config)
 	if err != nil {

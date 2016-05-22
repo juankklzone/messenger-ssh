@@ -97,6 +97,6 @@ func HanddleMessage(m Messaging) {
 		}
 		sendMessage(m.Sender.Id, "Conexión realizada")
 	} else {
-		sendMessage(m.Sender.Id, "Comando desconocido\nLos comandos son:\nstart ssh usuario dominio\nstop ssh")
+		sendMessage(m.Sender.Id, "Comando desconocido\nLos comandos son:\nstart ssh usuario dominio puerto\nstop ssh")
 	}
 }
