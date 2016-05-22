@@ -63,8 +63,11 @@ func startSession(m Messaging) (err error) {
 		return
 	}
 	u.session.Stdout = u.readBuf
-	u.session.Stdin = u.writeBuf
-	tee := io.TeeReader(u.session.Stdin, u.writeBuf)
+	wpipe, err := u.session.StdinPipe()
+	if err != nil {
+		return
+	}
+	go io.Copy(wpipe, u.writeBuf)
 	modes := ssh.TerminalModes{
 		ssh.ECHO:          0,     // disable echoing
 		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
@@ -79,14 +82,6 @@ func startSession(m Messaging) (err error) {
 	}
 	mapaUsuarios[u.id] = u
 	go func() { u.session.Wait() }()
-	leerDatos := func(r io.Reader) {
-		b, err := ioutil.ReadAll(r)
-		if err != nil {
-			fmt.Println("error al leer tee", err)
-		}
-		fmt.Printf("%s", b)
-	}
-	go leerDatos(tee)
 	return
 }
 
@@ -108,6 +103,7 @@ func sendCommand(m Messaging) (result string, err error) {
 	usr.writeBuf.Reset()
 	result = usr.readBuf.String()
 	usr.readBuf.Reset()
+
 	return
 }
 
