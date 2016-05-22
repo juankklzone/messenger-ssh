@@ -96,6 +96,8 @@ func closeSession(m Messaging) (err error) {
 }
 
 func sendCommand(m Messaging) (result string, err error) {
+	err = errors.New("testing err")
+	return
 	usr := mapaUsuarios[m.Sender.Id]
 	if usr.session == nil {
 		err = errors.New("no hay una sesión iniciada")
