@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -62,6 +63,7 @@ func startSession(m Messaging) (err error) {
 	}
 	u.session.Stdout = u.readBuf
 	u.session.Stdin = u.writeBuf
+	io.TeeReader(u.session.Stdin, u.writeBuf)
 	modes := ssh.TerminalModes{
 		ssh.ECHO:          0,     // disable echoing
 		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
