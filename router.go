@@ -19,6 +19,8 @@ func handdler(res http.ResponseWriter, req *http.Request) {
 		verify(res, req)
 	case http.MethodPost:
 		recieve(res, req)
+	default:
+		fmt.Println("Metodo no permitido: " + req.Method)
 	}
 }
 
@@ -31,9 +33,13 @@ func verify(res http.ResponseWriter, req *http.Request) {
 }
 
 func recieve(res http.ResponseWriter, req *http.Request) {
-	body, _ := ioutil.ReadAll(req.Body)
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	var d mssh.Data
-	err := json.Unmarshal(body, &d)
+	err = json.Unmarshal(body, &d)
 	if err != nil {
 		fmt.Println(err)
 		return
