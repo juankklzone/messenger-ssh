@@ -88,12 +88,13 @@ func sendMessage(id string, text string) {
 //HanddleMessage se encaarga de hacer la función dependiendo el mensaje recibido
 func HanddleMessage(m Messaging) {
 	if strings.HasPrefix(m.Message.Text, "start") {
+		sendMessage(m.Sender.Id, "Conectando...")
 		err := startSession(m)
 		if err != nil {
-			sendMessage(m.Sender.Id, "No se pudo conectar\nHola")
+			sendMessage(m.Sender.Id, "No se pudo conectar al servidor")
 			return
 		}
-		sendMessage(m.Sender.Id, "Conexión realizada\nHola")
+		sendMessage(m.Sender.Id, "Conexión realizada")
 	} else {
 		sendMessage(m.Sender.Id, "Comando desconocido\nLos comandos son:\nstart ssh usuario dominio\nstop ssh")
 	}
