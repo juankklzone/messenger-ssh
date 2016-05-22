@@ -107,7 +107,7 @@ func HanddleMessage(m Messaging) {
 		result, err := sendCommand(m)
 		if err != nil {
 			sendMessage(m.Sender.Id, " no se pudo ejecutar comando")
-			fmt.Println(err)
+			fmt.Println("error al enviar comando", err)
 		} else {
 			sendMessage(m.Sender.Id, result)
 		}

@@ -62,6 +62,18 @@ func startSession(m Messaging) (err error) {
 	}
 	u.session.Stdout = u.readBuf
 	u.session.Stdin = u.writeBuf
+	modes := ssh.TerminalModes{
+		ssh.ECHO:          0,     // disable echoing
+		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
+		ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
+	}
+	err = u.session.RequestPty("xterm", 120, 180, modes)
+	if err != nil {
+		return
+	}
+	if err = u.session.Shell(); err != nil {
+		return
+	}
 	mapaUsuarios[u.id] = u
 	go func() { u.session.Wait() }()
 	return
