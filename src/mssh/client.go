@@ -18,7 +18,7 @@ type User struct {
 var (
 	mapaUsuarios map[string]User
 	auth         ssh.AuthMethod
-	ruta         = os.Getenv("SSH_CLIENT")
+	ruta         = os.Getenv("SSH_KEY")
 	//user = flag.String("user", os.Getenv("SSH_CLIENT"), "usuario ssh -> $SSH_CLIENT")
 	//ruta = flag.String("archivo", os.Getenv("SSH_PUBLIC_KEY"), "archivo con llave pública $SSH_PUBLIC_KEY")
 	//pass = flag.String("pass", os.Getenv("SSH_PASS"), "pass ssh -> $SSH_PASS")
