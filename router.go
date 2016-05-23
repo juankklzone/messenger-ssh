@@ -45,8 +45,6 @@ func recieve(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	for _, m := range d.Entries[0].Messagings {
-		if m.Message.Text != "" {
-			mssh.HanddleMessage(m)
-		}
+		mssh.HanddleMessage(m)
 	}
 }

@@ -65,33 +65,27 @@ type DeliverMessage struct {
 	Message   Message   `json:"message"`
 }
 
-func sendMessage(id string, text string) {
-	lt := len(text)
-	if lt > 320 {
-		segments, rem := lt/320, lt%320
-		for i := 0; i < segments; i++ {
-			sendMessage(id, text[i*320:i*320+320])
+func sendMessage(id string, message string) {
+	if len(message) > 0 {
+		url := fmt.Sprintf(deliverURL, PageAuth.PageToken)
+		dm := DeliverMessage{
+			Recipient: Recipient{Id: id},
 		}
-		if rem != 0 {
-			sendMessage(id, text[segments*320:])
+		for _, text := range blockText(message) {
+			dm.Message = text
+			message, err := json.Marshal(&dm)
+			if err != nil {
+				fmt.Println("error al codificar mensaje de envio", err)
+				return
+			}
+			resp, err := http.Post(url, "application/json", bytes.NewBuffer(message))
+			if err != nil {
+				fmt.Println("error al enviar respesta", err)
+			}
+			if resp.StatusCode != http.StatusOK {
+				fmt.Println("status equivocado de respuesta", resp.Status)
+			}
 		}
-	}
-	dm := DeliverMessage{
-		Message:   Message{Text: text},
-		Recipient: Recipient{Id: id},
-	}
-	url := fmt.Sprintf(deliverURL, PageAuth.PageToken)
-	message, err := json.Marshal(&dm)
-	if err != nil {
-		fmt.Println("error al codificar mensaje de envio", err)
-		return
-	}
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(message))
-	if err != nil {
-		fmt.Println("error al enviar respesta", err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println("status equivocado de respuesta", resp.Status)
 	}
 }
 
@@ -123,4 +117,21 @@ func HanddleMessage(m Messaging) {
 			sendMessage(m.Sender.Id, result)
 		}
 	}
+}
+
+func blockText(text string) []string {
+	//Límite de caractares a envíar 320
+	blocks := make([]string, len(text)/320+1)
+	for i := 0; i <= len(text)/320; i++ {
+		in := i * 320
+		fin := in + 320
+		if fin > len(text) {
+			fin = len(text)
+		}
+		if in == fin {
+			break
+		}
+		blocks[i] = text[in:fin]
+	}
+	return blocks
 }

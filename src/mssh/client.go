@@ -16,41 +16,49 @@ type User struct {
 }
 
 var (
-	mapaUsuarios map[string]User
-	auth         ssh.AuthMethod
-	ruta         = os.Getenv("SSH_KEY")
-	//user = flag.String("user", os.Getenv("SSH_CLIENT"), "usuario ssh -> $SSH_CLIENT")
-	//ruta = flag.String("archivo", os.Getenv("SSH_PUBLIC_KEY"), "archivo con llave pública $SSH_PUBLIC_KEY")
-	//pass = flag.String("pass", os.Getenv("SSH_PASS"), "pass ssh -> $SSH_PASS")
+	mapaUsuarios   map[string]User
+	mapaPermitidos map[string][]string
+	auth           ssh.AuthMethod
+	ruta           = os.Getenv("SSH_KEY")
 )
 
 func init() {
 	mapaUsuarios = make(map[string]User)
+	mapaPermitidos = make(map[string][]string)
+	mapaPermitidos["1026748750723907"] = []string{"alepht.com", "alepht", "104.236.30.229"}  //Juan
+	mapaPermitidos["10205869268711621"] = []string{"alepht.com", "alepht", "104.236.30.229"} //Mario
 	auth = publicKeyFile(ruta)
 }
 
 func startSession(m Messaging) (err error) {
-	var user, ip, port string
-	fmt.Sscanf(m.Message.Text, "start ssh %s %s %s", &user, &ip, &port)
-	u := User{
-		id: m.Sender.Id,
+	ips, val := mapaPermitidos[m.Sender.Id]
+	if val {
+		var user, ip, port string
+		fmt.Sscanf(m.Message.Text, "start ssh %s %s %s", &user, &ip, &port)
+		if allowIP(ip, ips) {
+			u := User{
+				id: m.Sender.Id,
+			}
+			config := &ssh.ClientConfig{
+				User: user,
+				Auth: []ssh.AuthMethod{
+					auth,
+				},
+			}
+			if port == "" {
+				port = "22"
+			}
+			url := ip + ":" + port
+			fmt.Println(url)
+			u.conn, err = ssh.Dial("tcp", url, config)
+			if err != nil {
+				return
+			}
+			mapaUsuarios[u.id] = u
+			return
+		}
 	}
-	config := &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{
-			auth,
-		},
-	}
-	if port == "" {
-		port = "22"
-	}
-	url := ip + ":" + port
-	fmt.Println(url)
-	u.conn, err = ssh.Dial("tcp", url, config)
-	if err != nil {
-		return
-	}
-	mapaUsuarios[u.id] = u
+	err = errors.New("No se tiene autorización")
 	return
 }
 
@@ -75,50 +83,14 @@ func sendCommand(m Messaging) (result string, err error) {
 	return
 }
 
-// func main() {
-// 	flag.Parse()
-// 	config := &ssh.ClientConfig{
-// 		User: *user,
-// 		Auth: []ssh.AuthMethod{
-// 			publicKeyFile(*ruta),
-// 		},
-// 	}
-// 	conn, err := ssh.Dial("tcp", "alepht.com:22", config)
-// 	checkErr(err)
-// 	defer conn.Close()
-// 	session, err := conn.NewSession()
-// 	checkErr(err)
-// 	defer session.Close()
-
-// 	session.Stdout = os.Stdout
-// 	session.Stderr = os.Stderr
-// 	pipe, err := session.StdinPipe()
-// 	defer pipe.Close()
-// 	tee := io.TeeReader(os.Stdin, pipe)
-// 	//Pipe entre Stdin local y Stdin de la sesión ssh
-// 	leerDatos := func(r io.Reader) {
-// 		b, err := ioutil.ReadAll(r)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		fmt.Printf("%s", b)
-// 	}
-// 	go leerDatos(tee)
-// 	checkErr(err)
-
-// 	modes := ssh.TerminalModes{
-// 		ssh.ECHO:          0,     // disable echoing
-// 		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
-// 		ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
-// 	}
-// 	err = session.RequestPty("xterm", 120, 180, modes)
-// 	checkErr(err)
-// 	if err := session.Shell(); err != nil {
-// 		panic(err)
-// 	}
-// 	err = session.Wait()
-// 	fmt.Println("finalizando sesión con error ", err)
-// }
+func allowIP(ip string, ips []string) bool {
+	for i := range ips {
+		if ips[i] == ip {
+			return true
+		}
+	}
+	return false
+}
 
 func publicKeyFile(file string) ssh.AuthMethod {
 	buffer, err := ioutil.ReadFile(file)
