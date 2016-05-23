@@ -72,7 +72,7 @@ func sendMessage(id string, message string) {
 			Recipient: Recipient{Id: id},
 		}
 		for _, text := range blockText(message) {
-			dm.Message = text
+			dm.Message.Text = text
 			message, err := json.Marshal(&dm)
 			if err != nil {
 				fmt.Println("error al codificar mensaje de envio", err)
