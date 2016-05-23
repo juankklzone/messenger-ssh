@@ -63,8 +63,11 @@ func startSession(m Messaging) (err error) {
 }
 
 func closeSession(m Messaging) (err error) {
-	err = mapaUsuarios[m.Sender.Id].conn.Close()
-	delete(mapaUsuarios, m.Sender.Id)
+	u := mapaUsuarios[m.Sender.Id]
+	if u.conn != nil {
+		err = mapaUsuarios[m.Sender.Id].conn.Close()
+		delete(mapaUsuarios, m.Sender.Id)
+	}
 	return
 }
 
