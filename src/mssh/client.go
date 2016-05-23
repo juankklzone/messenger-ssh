@@ -71,10 +71,10 @@ func closeSession(m Messaging) (err error) {
 func sendCommand(m Messaging) (result string, err error) {
 	usr := mapaUsuarios[m.Sender.Id]
 	if usr.conn == nil {
-		err = errors.New("no hay una sesión iniciada")
+		err = errors.New("No hay una sesión iniciada")
 		return
 	}
-	fmt.Println("comando a enviar: ", m.Message.Text)
+	fmt.Println("Comando a enviar: ", m.Message.Text)
 	session, _ := usr.conn.NewSession()
 	data, err := session.CombinedOutput(m.Message.Text)
 	result = string(data)
@@ -94,10 +94,8 @@ func allowIP(ip string, ips []string) bool {
 func publicKeyFile(file string) ssh.AuthMethod {
 	buffer, err := ioutil.ReadFile(file)
 	checkErr(err)
-
 	key, err := ssh.ParsePrivateKey(buffer)
 	checkErr(err)
-	//fmt.Println(key.PublicKey().Type())
 	return ssh.PublicKeys(key)
 }
 

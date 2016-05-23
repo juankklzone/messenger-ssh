@@ -75,15 +75,15 @@ func sendMessage(id string, message string) {
 			dm.Message.Text = text
 			message, err := json.Marshal(&dm)
 			if err != nil {
-				fmt.Println("error al codificar mensaje de envio", err)
+				fmt.Println("Error al codificar mensaje de envio: ", err)
 				return
 			}
 			resp, err := http.Post(url, "application/json", bytes.NewBuffer(message))
 			if err != nil {
-				fmt.Println("error al enviar respesta", err)
+				fmt.Println("Error al enviar respuesta: ", err)
 			}
 			if resp.StatusCode != http.StatusOK {
-				fmt.Println("status equivocado de respuesta", resp.Status)
+				fmt.Println("Status equivocado de respuesta:", resp.Status)
 			}
 		}
 	}
@@ -97,6 +97,7 @@ func HanddleMessage(m Messaging) {
 		err := startSession(m)
 		if err != nil {
 			sendMessage(m.Sender.Id, "No se pudo conectar al servidor")
+			fmt.Println("No se pudo establecer la conexión: ", err)
 			return
 		}
 		sendMessage(m.Sender.Id, "Conexión realizada")
@@ -104,16 +105,16 @@ func HanddleMessage(m Messaging) {
 		sendMessage(m.Sender.Id, "Cerrando sesión....")
 		err := closeSession(m)
 		if err != nil {
-			fmt.Println("error al cerrar sesión", err)
+			fmt.Println("Error al cerrar sesión: ", err)
 		}
-		sendMessage(m.Sender.Id, "sesión finalizada")
+		sendMessage(m.Sender.Id, "Sesión finalizada")
 	} else {
 		result, err := sendCommand(m)
 		if err != nil {
-			sendMessage(m.Sender.Id, " no se pudo ejecutar comando")
-			fmt.Println("error al enviar comando", err)
+			sendMessage(m.Sender.Id, "No se pudo ejecutar comando")
+			fmt.Println("Error al enviar comando: ", err)
 		} else {
-			fmt.Println("resultado a enviar", result)
+			fmt.Println("Resultado a enviar:\n", result)
 			sendMessage(m.Sender.Id, result)
 		}
 	}
