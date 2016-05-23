@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -67,6 +68,7 @@ type DeliverMessage struct {
 
 func sendMessage(id string, message string) {
 	if len(message) > 0 {
+		log.Println(id, "-", message)
 		url := fmt.Sprintf(deliverURL, PageAuth.PageToken)
 		dm := DeliverMessage{
 			Recipient: Recipient{Id: id},
@@ -75,15 +77,15 @@ func sendMessage(id string, message string) {
 			dm.Message.Text = text
 			message, err := json.Marshal(&dm)
 			if err != nil {
-				fmt.Println("Error al codificar mensaje de envio: ", err)
+				log.Println(id, "-Error al codificar mensaje de envio: ", err)
 				return
 			}
 			resp, err := http.Post(url, "application/json", bytes.NewBuffer(message))
 			if err != nil {
-				fmt.Println("Error al enviar respuesta: ", err)
+				log.Println(id, "-Error al enviar respuesta: ", err)
 			}
 			if resp.StatusCode != http.StatusOK {
-				fmt.Println("Status equivocado de respuesta:", resp.Status)
+				log.Println(id, "-Status equivocado de respuesta:", resp.Status)
 			}
 		}
 	}
@@ -91,13 +93,12 @@ func sendMessage(id string, message string) {
 
 //HanddleMessage se encaarga de hacer la función dependiendo el mensaje recibido
 func HanddleMessage(m Messaging) {
-	fmt.Println(m.Message.Text)
 	if strings.HasPrefix(m.Message.Text, "start") {
 		sendMessage(m.Sender.Id, "Conectando...")
 		err := startSession(m)
 		if err != nil {
 			sendMessage(m.Sender.Id, "No se pudo conectar al servidor")
-			fmt.Println("No se pudo establecer la conexión: ", err)
+			log.Println(m.Sender.Id, "-No se pudo establecer la conexión: ", err)
 			return
 		}
 		sendMessage(m.Sender.Id, "Conexión realizada")
@@ -105,16 +106,15 @@ func HanddleMessage(m Messaging) {
 		sendMessage(m.Sender.Id, "Cerrando sesión....")
 		err := closeSession(m)
 		if err != nil {
-			fmt.Println("Error al cerrar sesión: ", err)
+			log.Println(m.Sender.Id, "-Error al cerrar sesión: ", err)
 		}
 		sendMessage(m.Sender.Id, "Sesión finalizada")
 	} else {
 		result, err := sendCommand(m)
 		if err != nil {
 			sendMessage(m.Sender.Id, "No se pudo ejecutar comando")
-			fmt.Println("Error al enviar comando: ", err)
+			log.Println(m.Sender.Id, "-Error al enviar comando: ", err)
 		} else {
-			fmt.Println("Resultado a enviar:\n", result)
 			sendMessage(m.Sender.Id, result)
 		}
 	}

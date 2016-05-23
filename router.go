@@ -2,11 +2,20 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"mssh"
 	"net/http"
+	"os"
 )
+
+func init() {
+	f, err := os.OpenFile("./errors.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic("No se pudo abrir el archivo log: " + err.Error())
+	}
+	log.SetOutput(f)
+}
 
 func main() {
 	http.HandleFunc("/", handdler)
@@ -20,7 +29,7 @@ func handdler(res http.ResponseWriter, req *http.Request) {
 	case http.MethodPost:
 		recieve(res, req)
 	default:
-		fmt.Println("Metodo no permitido: " + req.Method)
+		log.Println("Metodo no permitido: ", req.Method)
 	}
 }
 
@@ -35,13 +44,13 @@ func verify(res http.ResponseWriter, req *http.Request) {
 func recieve(res http.ResponseWriter, req *http.Request) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	var d mssh.Data
 	err = json.Unmarshal(body, &d)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	for _, m := range d.Entries[0].Messagings {

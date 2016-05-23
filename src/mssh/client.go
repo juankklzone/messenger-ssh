@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"golang.org/x/crypto/ssh"
@@ -49,7 +50,6 @@ func startSession(m Messaging) (err error) {
 				port = "22"
 			}
 			url := ip + ":" + port
-			fmt.Println(url)
 			u.conn, err = ssh.Dial("tcp", url, config)
 			if err != nil {
 				return
@@ -74,7 +74,7 @@ func sendCommand(m Messaging) (result string, err error) {
 		err = errors.New("No hay una sesión iniciada")
 		return
 	}
-	fmt.Println("Comando a enviar: ", m.Message.Text)
+	log.Println(m.Sender.Id, "-Comando a enviar: ", m.Message.Text)
 	session, _ := usr.conn.NewSession()
 	data, err := session.CombinedOutput(m.Message.Text)
 	result = string(data)
