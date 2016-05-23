@@ -68,7 +68,7 @@ type DeliverMessage struct {
 
 func sendMessage(id string, message string) {
 	if len(message) > 0 {
-		log.Println(id, "-", message)
+		log.Println(id, message)
 		url := fmt.Sprintf(deliverURL, PageAuth.PageToken)
 		dm := DeliverMessage{
 			Recipient: Recipient{Id: id},
@@ -77,15 +77,15 @@ func sendMessage(id string, message string) {
 			dm.Message.Text = text
 			message, err := json.Marshal(&dm)
 			if err != nil {
-				log.Println(id, "-Error al codificar mensaje de envio: ", err)
+				log.Println(id, "Error al codificar mensaje de envio:", err)
 				return
 			}
 			resp, err := http.Post(url, "application/json", bytes.NewBuffer(message))
 			if err != nil {
-				log.Println(id, "-Error al enviar respuesta: ", err)
+				log.Println(id, "Error al enviar respuesta:", err)
 			}
 			if resp.StatusCode != http.StatusOK {
-				log.Println(id, "-Status equivocado de respuesta:", resp.Status)
+				log.Println(id, "Status equivocado de respuesta:", resp.Status)
 			}
 		}
 	}
@@ -98,7 +98,7 @@ func HanddleMessage(m Messaging) {
 		err := startSession(m)
 		if err != nil {
 			sendMessage(m.Sender.Id, "No se pudo conectar al servidor")
-			log.Println(m.Sender.Id, "-No se pudo establecer la conexión: ", err)
+			log.Println(m.Sender.Id, "No se pudo establecer la conexión:", err)
 			return
 		}
 		sendMessage(m.Sender.Id, "Conexión realizada")
@@ -106,14 +106,14 @@ func HanddleMessage(m Messaging) {
 		sendMessage(m.Sender.Id, "Cerrando sesión....")
 		err := closeSession(m)
 		if err != nil {
-			log.Println(m.Sender.Id, "-Error al cerrar sesión: ", err)
+			log.Println(m.Sender.Id, "Error al cerrar sesión:", err)
 		}
 		sendMessage(m.Sender.Id, "Sesión finalizada")
 	} else {
 		result, err := sendCommand(m)
 		if err != nil {
 			sendMessage(m.Sender.Id, "No se pudo ejecutar comando")
-			log.Println(m.Sender.Id, "-Error al enviar comando: ", err)
+			log.Println(m.Sender.Id, "Error al enviar comando:", err)
 		} else {
 			sendMessage(m.Sender.Id, result)
 		}

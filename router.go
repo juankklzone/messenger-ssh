@@ -29,7 +29,7 @@ func handdler(res http.ResponseWriter, req *http.Request) {
 	case http.MethodPost:
 		recieve(res, req)
 	default:
-		log.Println("Metodo no permitido: ", req.Method)
+		log.Println("Metodo no permitido:", req.Method)
 	}
 }
 

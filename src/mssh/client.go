@@ -74,7 +74,7 @@ func sendCommand(m Messaging) (result string, err error) {
 		err = errors.New("No hay una sesión iniciada")
 		return
 	}
-	log.Println(m.Sender.Id, "-Comando a enviar: ", m.Message.Text)
+	log.Println(m.Sender.Id, "Comando a enviar:", m.Message.Text)
 	session, _ := usr.conn.NewSession()
 	data, err := session.CombinedOutput(m.Message.Text)
 	result = string(data)
