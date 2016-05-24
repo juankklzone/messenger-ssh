@@ -12,10 +12,20 @@ import (
 const deliverURL = "https://graph.facebook.com/v2.6/me/messages?access_token=%s"
 
 const ayuda = `
+Este bot te ayuda a conectarte a un servidor remoto por medio de SSH, 
+y poder ejecutar comandos a través de Facebook Messenger © 
+ 
 Lista de comandos:
-start ssh <usuario> <direccion>		Se comunica a un servidor ssh usuario@direccion
-close								Cierra la sesión ssh
-help								Muestra este comando de ayuda 
+
+start ssh <usuario> <direccion> [puerto]
+Se comunica a un servidor ssh usuario@direccion. A partir de este momento
+los comandos que introduzcas serán procesados por el servidor remoto. 
+
+close
+Cierra la conexión ssh
+
+help
+Muestra este comando de ayuda 
 `
 
 var PageAuth = Auth{
