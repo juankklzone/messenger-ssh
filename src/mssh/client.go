@@ -117,3 +117,10 @@ func updatePath(userid, path string) {
 		mapaUsuarios[userid] = u
 	}
 }
+
+func getPath(userid string) (path string) {
+	if mapaUsuarios[userid].conn != nil {
+		path = mapaUsuarios[userid].lastPath
+	}
+	return
+}
