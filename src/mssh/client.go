@@ -21,6 +21,7 @@ var (
 	mapaPermitidos map[string][]string
 	auth           ssh.AuthMethod
 	ruta           = os.Getenv("SSH_KEY")
+	errNoSesion    = errors.New("No hay una sesión iniciada")
 )
 
 func init() {
@@ -74,7 +75,7 @@ func closeSession(m Messaging) (err error) {
 func sendCommand(m Messaging) (result string, err error) {
 	usr := mapaUsuarios[m.Sender.Id]
 	if usr.conn == nil {
-		err = errors.New("No hay una sesión iniciada")
+		err = errNoSesion
 		return
 	}
 	log.Println(m.Sender.Id, "Comando a enviar:", m.Message.Text)
