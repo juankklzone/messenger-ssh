@@ -146,7 +146,7 @@ func HanddleMessage(m Messaging) {
 		} else {
 			if isCdCommand {
 				fmt.Println(result)
-				result = result[:len(result)-2]
+				result = result[:len(result)-1]
 				updatePath(m.Sender.Id, result)
 				sendMessage(m.Sender.Id, result)
 			} else {
