@@ -132,7 +132,7 @@ func HanddleMessage(m Messaging) {
 			isCdCommand = true
 		}
 		if isCdCommand {
-			m.Message.Text += " && pwd"
+			m.Message.Text = fmt.Sprintf("cd %s && %s && pwd", getPath(m.Sender.Id), m.Message.Text)
 		} else {
 			m.Message.Text = fmt.Sprintf("cd %s && %s", getPath(m.Sender.Id), m.Message.Text)
 		}
