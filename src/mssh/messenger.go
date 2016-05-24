@@ -127,6 +127,13 @@ func HanddleMessage(m Messaging) {
 	} else if checkmsg == "help" {
 		enviarAyuda(m.Sender.Id)
 	} else {
+		isCdCommand := false
+		if strings.HasPrefix(checkmsg, "cd ") {
+			isCdCommand = true
+		}
+		if isCdCommand {
+			m.Message.Text += " & pwd"
+		}
 		result, err := sendCommand(m)
 		if err != nil {
 			sendMessage(m.Sender.Id, "No se pudo ejecutar comando")
@@ -135,7 +142,13 @@ func HanddleMessage(m Messaging) {
 			}
 			log.Println(m.Sender.Id, "Error al enviar comando:", err)
 		} else {
-			sendMessage(m.Sender.Id, result)
+			if isCdCommand {
+				idxStartPath := strings.Index(result, "\n")
+				result = result[idxStartPath+1:]
+				updatePath(m.Sender.Id, result)
+			} else {
+				sendMessage(m.Sender.Id, result)
+			}
 		}
 	}
 }

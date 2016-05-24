@@ -12,8 +12,9 @@ import (
 
 //User contiene la configuración para la conexión SSH y el id que lo representa en Messenger
 type User struct {
-	id   string
-	conn *ssh.Client
+	id       string
+	conn     *ssh.Client
+	lastPath string
 }
 
 var (
@@ -106,5 +107,13 @@ func publicKeyFile(file string) ssh.AuthMethod {
 func checkErr(err error) {
 	if err != nil {
 		panic(err)
+	}
+}
+
+func updatePath(userid, path string) {
+	if mapaUsuarios[userid].conn != nil {
+		u := mapaUsuarios[userid]
+		u.lastPath = path
+		mapaUsuarios[userid] = u
 	}
 }
