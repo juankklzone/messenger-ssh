@@ -145,8 +145,9 @@ func HanddleMessage(m Messaging) {
 			log.Println(m.Sender.Id, "Error al enviar comando:", err)
 		} else {
 			if isCdCommand {
-				idxStartPath := strings.Index(result, "\n")
-				result = result[idxStartPath+1:]
+				fmt.Println(result)
+				//idxStartPath := strings.Index(result, "\n")
+				//result = result[idxStartPath+1:]
 				updatePath(m.Sender.Id, result)
 			} else {
 				sendMessage(m.Sender.Id, result)
