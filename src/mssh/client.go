@@ -115,12 +115,14 @@ func updatePath(userid, path string) {
 		u := mapaUsuarios[userid]
 		u.lastPath = path
 		mapaUsuarios[userid] = u
+		fmt.Println("Guardardo path ", mapaUsuarios[userid])
 	}
 }
 
 func getPath(userid string) (path string) {
 	if mapaUsuarios[userid].conn != nil {
 		path = mapaUsuarios[userid].lastPath
+		fmt.Println("Obteniendo path", path)
 	}
 	return
 }
