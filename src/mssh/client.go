@@ -28,8 +28,8 @@ var (
 func init() {
 	mapaUsuarios = make(map[string]User)
 	mapaPermitidos = make(map[string][]string)
-	mapaPermitidos["1026748750723907"] = []string{"alepht.com", "alepht", "104.236.30.229"}  //Juan
-	mapaPermitidos["10205869268711621"] = []string{"alepht.com", "alepht", "104.236.30.229"} //Mario
+	mapaPermitidos["1026748750723907"] = []string{"alepht.com", "alepht", "104.236.30.229", "107.170.101.174"}  //Juan
+	mapaPermitidos["10205869268711621"] = []string{"alepht.com", "alepht", "104.236.30.229", "107.170.101.174"} //Mario
 	auth = publicKeyFile(ruta)
 }
 
