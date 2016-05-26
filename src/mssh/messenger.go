@@ -127,7 +127,7 @@ func HanddleMessage(m Messaging) {
 	} else if checkmsg == "help" {
 		enviarAyuda(m.Sender.Id)
 	} else {
-		if checkmsg == "vi" || checkmsg == "nano" {
+		if checkmsg == "vi" || checkmsg == "nano" || checkmsg == "vim" {
 			sendMessage(m.Sender.Id, "No se pudo ejecutar comando")
 			return
 		}
