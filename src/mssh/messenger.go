@@ -127,6 +127,10 @@ func HanddleMessage(m Messaging) {
 	} else if checkmsg == "help" {
 		enviarAyuda(m.Sender.Id)
 	} else {
+		if checkmsg == "vi" || checkmsg == "nano" {
+			sendMessage(m.Sender.Id, "No se pudo ejecutar comando")
+			return
+		}
 		isCdCommand := false
 		if strings.HasPrefix(checkmsg, "cd ") {
 			isCdCommand = true
