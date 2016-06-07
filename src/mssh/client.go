@@ -1,6 +1,7 @@
 package mssh
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -34,8 +35,10 @@ func init() {
 	mapaUsuarios = make(map[string]User)
 	mapaPermitidos = make(map[string][]string)
 	//Usuarios con sus hosts permitidos
-	mapaPermitidos["1026748750723907"] = []string{"alepht.com", "alepht", "104.236.30.229", "107.170.101.174"}  //Juan
-	mapaPermitidos["10205869268711621"] = []string{"alepht.com", "alepht", "104.236.30.229", "107.170.101.174"} //Mario
+	users, err := ioutil.ReadFile(os.Getenv("USERS")) //Se obtiene el json de los usuarios autorizados
+	checkErr(err)
+	err = json.Unmarshal(users, &mapaPermitidos) //Se convierte en el mapa
+	checkErr(err)
 	//Se obtiene la autenticación utilizando las llaves SSH
 	auth = publicKeyFile(ruta)
 }

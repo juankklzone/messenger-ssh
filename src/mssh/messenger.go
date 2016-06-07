@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -35,9 +36,9 @@ var (
 	//PageAuth es la estrucutra que guarda los tokens de la página de Facebook
 	PageAuth = Auth{
 		// VerifyToken contiene el token para verificar la autenticidad del servicio web, es definido en la interfaz del API de Messenger
-		VerifyToken: "verify_Alepht",
+		VerifyToken: os.Getenv("VERIFY_TOKEN"), //"verify_Alepht",
 		//PageToken contiene el token generado en el API de Messenger para utilizar una págian de Facebook
-		PageToken: "EAALVTDYz2rcBAD2NvvkJMo9d987bVfbMaXIC35d2DHtfnwLAFkQbtBfSacLBA5ch94prbcL9ZAXsDe72UAiXMUaahOyZB39dXgYdE8eDNt0gXlK6Ag3YbJInHCUKM78THlVh0k8F2wU5PAwWyEGzSZCq4MkLGq09OWY2bgjwAZDZD",
+		PageToken: os.Getenv("PAGE_TOKEN"), //"EAALVTDYz2rcBAD2NvvkJMo9d987bVfbMaXIC35d2DHtfnwLAFkQbtBfSacLBA5ch94prbcL9ZAXsDe72UAiXMUaahOyZB39dXgYdE8eDNt0gXlK6Ag3YbJInHCUKM78THlVh0k8F2wU5PAwWyEGzSZCq4MkLGq09OWY2bgjwAZDZD",
 	}
 )
 
