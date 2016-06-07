@@ -1,4 +1,6 @@
 export VERIFY_TOKEN="verify_Alepht"
 export PAGE_TOKEN="EAALVTDYz2rcBAD2NvvkJMo9d987bVfbMaXIC35d2DHtfnwLAFkQbtBfSacLBA5ch94prbcL9ZAXsDe72UAiXMUaahOyZB39dXgYdE8eDNt0gXlK6Ag3YbJInHCUKM78THlVh0k8F2wU5PAwWyEGzSZCq4MkLGq09OWY2bgjwAZDZD"
-export SSH_KEY="/Users/Mario/.ssh/id_rsa"
-export USERS="data/users.json"
+#export SSH_KEY="/Users/Mario/.ssh/id_rsa"
+#export USERS="data/users.json"
+#export CERT_FILE="data/cert.pem"
+#export KEY_FILE="data/key.pem"

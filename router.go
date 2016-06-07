@@ -19,8 +19,11 @@ func init() {
 }
 
 func main() {
-	http.HandleFunc("/", handdler)    //Handler para recibir peticiones
-	http.ListenAndServe(":8000", nil) //Corriendo en el puerto 8000
+	http.HandleFunc("/", handdler) //Handler para recibir peticiones
+	err := http.ListenAndServeTLS(":8000", os.Getenv("CERT_FILE"), os.Getenv("KEY_FILE"), nil)
+	if err != nil {
+		panic("No se pudo iniciar el servidor: " + err.Error())
+	}
 }
 
 //handdler se divide en 2 métodos: GET y POST
